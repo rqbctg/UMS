@@ -1,0 +1,87 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@{
+    ViewBag.Title = "ViewAllocatedClass";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Department> aDepartments = ViewBag.Departmentlist;
+}
+<link href="~/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<h2>ViewAllocatedClass</h2>
+
+<div>
+    <h4>ViewAllocatedClassRoom</h4>
+    <hr />
+    <div align="center">
+        <table>
+            <tr>
+                <td><label for="DepartmentId"></label></td>
+                <td>
+                    <select name="DepartmentId" id="DepartmentId">
+                        <option value="null">Pls select a department</option>
+                        @foreach (Department aDepartment in aDepartments)
+                        {
+                            <option value="@aDepartment.Id">@aDepartment.Name</option>
+
+                        }
+                    </select>
+                </td>
+
+            </tr>
+        </table>
+        <table id="viewAllocateRoomTable" class="table table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Schedule Info</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+
+
+            $("#DepartmentId").change(function () {
+                var deptId = $("#DepartmentId").val();
+                $("#tbody").empty();
+
+
+                var json = { departmentId: deptId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetAllocatedRoomViewByDepartmentId", "Room")',
+                    //url: '/Room/GetAllocatedRoomViewByDepartmentId',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+              
+                            if (value.ClassRoomName === '') {
+
+                                value.ClassRoomName = "Not allocated Yet";
+
+
+                            } else {
+
+                                
+                                
+                            }
+
+
+                            $("#tbody").append('<tr><td>' + value.CourseCode + '</td><td>' + value.CourseName + '</td><td>Room No:' + value.ClassRoomName + ''+value.DayN+'<strong>' + value.STartTime + '' + value.EndTime + '</strong></td></tr>');
+                        });
+                        $("#viewAllocateRoomTable").show();
+                        $("#viewAllocateRoomTable").DataTable();
+                    }
+                });
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,181 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+
+@{
+    ViewBag.Title = "ViewResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Student> aStudents =ViewBag.StudentList;
+}
+<link href="/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<link href="/Content/DataTables/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+
+<h2>View Student Result</h2>
+
+<div class="container">
+    <form id="resultForm" >
+        <div align="center">
+            <table>
+                <tr>
+                    <td><label for="StudentId">Select a Student</label></td>
+                    <td>
+                        <select id="StudentId" name="StudentId">
+                            <option value="">Pls select a Student RegNo </option>
+                            @foreach (Student aStudent in aStudents)
+                            {
+                                <option value="@aStudent.Id">@aStudent.Registration_Number</option>
+                            }
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><label for="Name">Name</label></td>
+                    <td><input type="text" id="Name" name="Name" readonly="readonly" /></td>
+                </tr>
+                <tr>
+                    <td><label for="Email">Email</label></td>
+                    <td><input type="text" id="Email" name="Email" readonly="readonly" /></td>
+                </tr>
+                <tr>
+                    <td><label for="Department">Department</label></td>
+                    <td><input type="text" id="Department" name="Department" readonly="readonly" /></td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td style="float: right;"><input type="submit" id="makePdf" name="makePdf" value="MAKE PDF" class="btn btn-info" /></td>
+                </tr>
+            </table>
+            <table id="viewResultShit" class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+
+
+        </div>
+
+    </form>
+</div>
+@section scripts
+{
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="/Scripts/DataTables/jquery.dataTables.js"></script>
+    <script>
+        $("#resultForm").validate({
+            rules: {
+                StudentId: {
+                    required: true
+                },
+                Name: { required: true },
+                Email: { required: true },
+                Department: { required: true }
+            },
+            messages: {
+                StudentId: {
+                    required: "Please select a Student's Regestration Number"
+                },
+                Name: "",
+                Email: "",
+                Department: ""
+            }
+        });
+
+        $("#DepartmentId").change(function () {
+            $("#CourseId").empty();
+            $("#CourseId").append("<option value=" + null + ">Pls Select</option>");
+
+
+            var deptid = $("#DepartmentId").val();
+            var json = { departmentId: deptid };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetCourseBydeptId", "Room")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function (data) {
+
+
+                    $.each(data, function (key, value) {
+
+                        $("#CourseId").append('<option value=' + value.Id + '>' + value.Code + '</option>');
+                    });
+                }
+            });
+
+
+        });
+
+        $(document).ready(function () {
+            $("#StudentId").change(function () {
+                $("#Name").val('');
+                $("#Email").val('');
+                $("#Department").val('');
+                
+                var stdntId = $("#StudentId").val();
+                var json = { studentId: stdntId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetStudentByID", "Result")',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+
+                        $.each(data, function (key, value) {
+                            $("#Name").val(value.Name);
+                            $("#Email").val(value.Email);
+                            $("#Department").val(value.Code);
+
+                            
+
+
+                        });
+
+                    }
+                });
+            });
+            $("#StudentId").change(function () {
+                $("#tbody").empty();
+                
+                var table = $('#viewResultShit').DataTable();
+ 
+                var stdId = $("#StudentId").val();
+                var json = { stdIdforECourse: stdId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetviewResultByStdId", "Result")',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $("#tbody").empty();
+                        $.each(data, function (key, value) {
+                            alert(value.Grdae);
+                            if (value.Grdae === '') {
+                                value.Grdae = 'Not Graded Yet';
+                            }
+                            $("#tbody").append('<tr><td>' + value.CourseCode + '</td><td>' + value.CourseName + '</td><td>' + value.Grdae + '</td></tr>');
+                            
+                            
+                        });
+                        $("#viewResultShit").DataTable();
+                    }
+                });
+            });
+
+        });
+    </script>
+}
+
+

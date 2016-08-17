@@ -1,0 +1,71 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<link href="/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<div>
+    <fieldset>
+        <legend>Save Department</legend>
+        <form id="departmentsubmit" method="POST">
+            <div align="center">
+                <table style="align-content: center">
+                    <tr>
+                        <td><label for="Code">Code</label></td>
+                        <td><input type="text" id="Code" name="Code"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Name">Name</label></td>
+                        <td><input name="Name" id="Name" type="text"/></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Save"/></td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        @if (ViewBag.message != null)
+{
+    <p style="color: green">@ViewBag.message</p>
+}
+    </fieldset>
+
+
+</div>
+
+@section scripts
+{
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+
+    <script>
+        $("#departmentsubmit").validate({
+            rules: {
+                Code: {
+                    required: true,
+                    minlength: 2,
+                    maxlength: 7
+                },
+                Name: { required: true }
+            },
+            messages: {
+                Code: {
+                    required: "Please enter department code",
+                    minlength: "Code must be at least 2 characters long",
+                    maxlength: "Code must be maximum 7 characters long"
+                },
+                Name: "Please enter department name"
+            }
+        });
+    </script>
+}
+

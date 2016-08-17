@@ -1,0 +1,113 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Department> aDepartments = ViewBag.DepatmentList;
+    List<Semester> aSemesters = ViewBag.SemesterList;
+}
+<link href="~/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+<div>
+    <fieldset>
+        <legend>Save Course</legend>
+        <div align="center">
+            <form id="courseSave" method="POST">
+                <table>
+                    <tr>
+                        <td><label for="Code">Code</label></td>
+                        <td><input type="text" id="Code" name="Code"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Name">Name</label></td>
+                        <td><input type="text" id="Name" name="Name"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Credit">Credit</label></td>
+                        <td><input type="text" id="Credit" name="Credit"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Description">Description</label></td>
+                        <td><textarea rows="3" cols="19" id="Description" name="Description"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Department_Id">Department</label></td>
+                        <td>
+                            <select id="Department_Id" name="Department_Id">
+                                <option value="">Select a Department</option>
+                                @foreach (Department aDepartment in aDepartments)
+                                {
+                                    <option value="@aDepartment.Id">@aDepartment.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="Semester_Id">Semester</label></td>
+                        <td>
+                            <select id="Semester_Id" name="Semester_Id">
+                                <option value="">Select a Semester</option>
+                                @foreach (Semester aSemester in aSemesters)
+                                {
+                                    <option value="@aSemester.Id">@aSemester.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Save"/></td>
+                    </tr>
+
+                </table>
+            </form>
+        </div>
+        @if (ViewBag.message != null)
+{
+    <p style="color: green">@ViewBag.message</p>
+}
+    </fieldset>
+</div>
+    
+@section scripts
+{
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+
+    <script>
+        $("#courseSave").validate({
+            rules: {
+                Code: {
+                    required: true,
+                    minlength: 5
+                },
+                Name: { required: true },
+                Credit: {
+                    required: true,
+                    range: [0.5, 5.0]
+                },
+                Description: { required: true },
+                Department_Id: { required: true },
+                Semester_Id: { required: true }
+            },
+            messages: {
+                Code: {
+                    required: "Please enter department code",
+                    minlength: "Code must be at least 5 characters long"
+                },
+                Name: { required: "Please enter Course name" },
+                Credit: {
+                    required: "Please enter Course credit",
+                    range: "Credit range is from 0.5 to 5.0"
+                },
+                Description: { required: "Please enter Course description" },
+                Department_Id: { required: "Please select a department" },
+                Semester_Id: { required: "Please select semester" }
+            }
+        });
+    </script>
+}
+

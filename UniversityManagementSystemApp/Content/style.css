@@ -1,0 +1,12 @@
+﻿body {
+}
+.navdeopdownUl {
+
+    float: none;
+    position: absolute;
+    background: #222222;
+    border-bottom: 1px  solid;
+    -webkit-animation: 1000ms;
+    -moz-animation: 1000ms;
+    color: white; 
+}

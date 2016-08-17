@@ -1,0 +1,38 @@
+﻿@using UniversityManagementSystemApp.Controllers
+
+@{
+    ViewBag.Title = "UnassignCourse";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>UnassignCourse</h2>
+<div class="container">
+    <div align="center">
+        <form method="POST">
+            <input id="unassignCourse" type="submit" name="unassignCourse" class="btn btn-danger" onclick="return unassign()" value="Unassign Courses" />
+        </form>
+      
+    </div>
+</div>
+@if (ViewBag.message != null)
+{
+    <p>@ViewBag.message</p>
+}
+@section scripts
+{
+    <script>
+
+        function unassign() {
+            
+            var r = confirm("Are you sure to unassign all courses?");
+            if (r === true) {
+                return true;
+            } else {
+                return false;
+
+            }
+        }
+
+    </script>
+}
+

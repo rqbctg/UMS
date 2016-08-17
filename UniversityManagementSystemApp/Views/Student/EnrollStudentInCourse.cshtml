@@ -1,0 +1,181 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@model UniversityManagementSystemApp.DAL.Model.EnrollCourse
+
+@{
+    ViewBag.Title = "EnroolStudentInCourse";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    List<Student> aStudents = ViewBag.StudentList;
+}
+
+<link href="~/Content/style.css" rel="stylesheet"/>
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<link href="/Content/bootstrap-datepicker3.min.css" rel="stylesheet" />
+
+<h1>Enroll Student In a Course</h1>
+
+<form id="enrollForm" method="POST">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group" align="center">
+        <table class="dataTables_sizing">
+            <tr>
+                <td><label for="StudentId">Student Reg. No.</label></td>
+                <td>
+                    <select id="StudentId" name="StudentId">
+                        <option value="">Pls select a Registration name</option>
+                        @foreach (Student aStudent in aStudents)
+                        {
+                            <option value="@aStudent.Id">@aStudent.Registration_Number</option>
+                        }
+
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="StudentName">Name</label></td>
+                <td><input type="text" class="disabled" readonly="readonly" id="StudentName" name="StudentName"/></td>
+            </tr>
+            <tr>
+                <td><label for="StudentEmail">Email</label></td>
+                <td><input type="text" class="disabled" readonly="readonly" id="StudentEmail" name="StudentEmail"/></td>
+            </tr>
+            <tr>
+                <td><label for="Code">Department</label></td>
+                <td><input id="Code" name="Code" type="text" readonly="readonly"/></td>
+            </tr>
+            <tr>
+                <td><label for="CourseId">Select Course</label></td>
+                <td>
+                    <select id="CourseId" name="CourseId"></select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="EnrollDate">Date</label></td>
+                <td>
+                    <div class="input-group date" data-provide="datepicker">
+                        <input type="text" id="EnrollDate" name="EnrollDate" class="form-control"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="Enroll" class="btn btn-danger" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+
+<div>
+    @if (ViewBag.message != null)
+{
+    <p style="color: green">@ViewBag.message</p>
+}
+</div>
+@section scripts
+{
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+
+    <script>
+        
+        $("#enrollForm").validate({
+            rules: {
+                StudentId: {
+                    required: true
+                },
+                StudentName: { required: true },
+                StudentEmail: { required: true },
+                Code: { required: true },
+                CourseId: { required: true },
+                EnrollDate: { required: true }
+            },
+            messages: {
+                StudentId: {
+                    required: "Please select a Department"
+                },
+                StudentName: "",
+                StudentEmail: "",
+                Code: "",
+                CourseId: "Please select a Course",
+                EnrollDate: "Please enter a date"
+            }
+        });
+        $(document).ready(function() {
+            $("#StudentId").change(function () {
+                $("#StudentName").val('');
+                $("#StudentEmail").val('');
+                $("#Code").val('');
+                $("#CourseId").empty();
+                var stdntId = $("#StudentId").val();
+                var json = { studentId: stdntId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetStudentByID", "Student")',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function(data) {
+                        //alert(value.DepartmentId);
+                        $.each(data, function(key, value) {
+
+                            //alert(key);
+                            $("#StudentName").val(value.Name);
+                            $("#StudentEmail").val(value.Email);
+                            $("#Code").val(value.Code);
+
+                            var deptId = value.DepartmentId;
+                            var jason = { departmentId: deptId };
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("GetCourseById", "Student")',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(jason),
+                                success: function (data) {
+                                    $("#CourseId").append('<option value='+""+'>Pls select a Course</option>');
+
+                                    $.each(data, function(key, value) {
+                                        $("#CourseId").append('<option value=' + value.Id + '>' + value.Code + '</option>');
+
+                                    });
+                                }
+                            });
+
+                        });
+                    }
+                });
+            });
+        });
+    </Script>
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            var currentDate = new Date();
+
+                
+            $('#DatePicker').datepicker({
+                inline: true,
+                showOtherMonths: true,
+                dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                format: "dd-mm-yyyy"
+
+            });
+            $('#DatePicker').datepicker("setDate", currentDate);
+
+
+           
+
+        });
+
+
+    </script>
+}

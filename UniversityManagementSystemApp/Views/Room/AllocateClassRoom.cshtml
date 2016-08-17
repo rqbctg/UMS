@@ -1,0 +1,184 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@model UniversityManagementSystemApp.DAL.Model.AllocateClassRoom
+
+@{
+    ViewBag.Title = "AllocateClassRoom";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Department> aDepartments = ViewBag.Departmentlist;
+    List<Day> aDays = ViewBag.Daylist;
+    List<Room> aRooms = ViewBag.RoomList;
+
+
+}
+
+<link href="/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<link href="~/Content/bootstrap-datepicker3.min.css" rel="stylesheet" />
+<link href="~/Content/wickedpicker.css" rel="stylesheet" />
+<h2>Allocate Class Room</h2>
+
+<div>
+    <fieldset>
+        <legend></legend>
+        <form id="AllocateRoom" method="POST">
+            <div class="form-group" align="center">
+                <table class="dataTables_sizing">
+                    <tr>
+                        <td><label for="DepartmentId">Department</label></td>
+                        <td>
+                            <select name="DepartmentId" id="DepartmentId">
+                                <option value="">Pls select department</option>
+                                @foreach (Department aDepartment in aDepartments)
+                                {
+                                    <option value="@aDepartment.Id">@aDepartment.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="CourseId">Course</label></td>
+                        <td>
+                            <select id="CourseId" name="CourseId"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="RoomId">Room No.</label></td>
+                        <td>
+                            <select name="RoomId" id="RoomId">
+                                <option value="">Pls select Room</option>
+                                @foreach (Room aRoom in aRooms)
+                                {
+                                    <option value="@aRoom.Id">@aRoom.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="DayId">Day</label></td>
+                        <td>
+                            <select id="DayId" name="DayId">
+                                <option value="">Pls select Day</option>
+                                @foreach (Day aDay in aDays)
+                                {
+                                    <option value="@aDay.Id">@aDay.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="DateTimeFrom">From</label></td>
+                        <td><input type="text" id="DateTimeFrom" name="DateTimeFrom" class="timepicker" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="DateTimeTo">To</label></td>
+                        <td><input type="text" id="DateTimeTo" name="DateTimeTo" class="timepicker" /></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Allocate" class="btn btn-default" /></td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </fieldset>
+</div>
+
+
+<div>
+    @if (ViewBag.message != null)
+{
+    <p style="color: green">@ViewBag.message</p>
+}
+</div>
+@section scripts
+{
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script>
+        $("#AllocateRoom").validate({
+            rules: {
+                DepartmentId: {
+                    required: true               
+                },
+                CourseId: { required: true },
+                RoomId: { required: true },
+                DayId: { required: true },
+                DateTimeFrom: { required: true },
+                DateTimeTo: { required: true }
+            },
+            messages: {
+                DepartmentId: {
+                    required: "Please select a Department"
+                },
+                CourseId: "Please select a Course",
+                RoomId: "Please select a Room",
+                DayId: "Please select a Day",
+                DateTimeFrom: "Please enter at what time the course will start",
+                DateTimeTo: "Please enter at what time the course will end"
+            }
+        });
+
+        $("#DepartmentId").change(function() {
+            $("#CourseId").empty();
+            $("#CourseId").append("<option value=" + null + ">Pls Select</option>");
+
+
+            var deptid = $("#DepartmentId").val();
+            var json = { departmentId: deptid };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetCourseBydeptId", "Room")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function(data) {
+
+
+                    $.each(data, function(key, value) {
+
+                        $("#CourseId").append('<option value=' + value.Id + '>' + value.Code + '</option>');
+                    });
+                }
+            });
+
+
+        });
+
+    </script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/wickedpicker/wickedpicker.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#DateTimeFrom").val('');
+            $("#DateTimeTo").val('');
+            $("#DateTimeFrom").click(function () {
+                $("#DateTimeFrom").val('');
+                $("#DateTimeFrom").wickedpicker({
+                    title: 'Pls select your Room allocation time ',
+                    //upArrow: 'wickedpicker_controls_control-up',
+                    //downArrow:'wickedpicker_controls_control-down',
+                    clearable: true
+                });
+            });
+            $("#DateTimeTo").click(function () {
+                $("#DateTimeTo").val('');
+
+                $("#DateTimeTo").wickedpicker({
+                    title: 'Pls select your Room allocation time ',
+                    clearable: true
+              
+                });
+            });
+
+        });
+        
+
+
+    </script>
+}

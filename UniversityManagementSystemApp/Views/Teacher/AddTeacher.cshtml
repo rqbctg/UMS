@@ -1,0 +1,148 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Department> aDepartments = ViewBag.DepatmentList;
+    List<Designation> aDesignations = ViewBag.DesignationList;
+}
+
+<link href="~/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<div>
+    <div>
+        <fieldset>
+            <legend>Save Teache</legend>
+            <div align="center">
+                <form id="addTeacher" method="POST">
+                    <table>
+                        <tr>
+                            <td><label for="Name"></label>Name</td>
+                            <td><input type="text" id="Name" name="Name"/></td>
+                        </tr>
+                        <tr>
+                            <td><label for="Address">Address</label></td>
+                            <td><textarea id="Address" name="Address" rows="3" cols="19"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td><label for="Email"></label>Email</td>
+                            <td><input type="email" id="Email" name="Email"/></td>
+                        </tr>
+                        <tr>
+                            <td><label for="Contactno">Contact No.</label></td>
+                            <td><input type="text" id="Contactno" name="Contactno"/></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="Designation_Id">Designation</label></td>
+                            <td>
+                                <select name="Designation_Id" id="Designation_Id">
+                                    <option value="">Select Teacher's Designation </option>
+                                    @foreach (Designation aDesignation in aDesignations)
+                                    {
+                                        <option value="@aDesignation.Id">@aDesignation.Name</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="Department_Id">Department</label></td>
+                            <td>
+                                <select name="Department_Id" id="Department_Id">
+                                    <option value="">Select Teacher's Department</option>
+                                    @foreach (Department aDepartment in aDepartments)
+                                    {
+                                        <option value="@aDepartment.Id">@aDepartment.Name</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="CreditToTake"></label>Credit To be Taken</td>
+                            <td><input type="text" id="CreditToTake" name="CreditToTake"/></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" value="Save"/></td>
+                        </tr>
+
+
+                    </table>
+                </form>
+                <div>
+                    <p style="color: green">@ViewBag.message</p>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+    
+@section scripts
+{
+
+    <script src="/Scripts/jquery-1.10.2.js"></script>
+    <script src="/Scripts/jquery.validate.js"></script>
+
+    <script>
+        $("#addTeacher").validate({
+            rules: {
+                Name: {
+                    required: true
+                },
+                Address: {
+                    required: true
+                },
+                Email: {
+                    required: true,
+                    email: true
+                },
+                Contactno: {
+                    required: true,
+                    number: true,
+                    minlength: 11
+                },
+                Designation_Id: {
+                    required: true
+                },
+                Department_Id: {
+                    required: true
+                },
+                CreditToTake: {
+                    required: true,
+                    min: 0
+                }
+            },
+            messages: {
+                Name: {
+                    required: "Please enter teacher name"
+                },
+                Address: {
+                    required: "Please enter address"
+                },
+                Email: {
+                    required: "Please enter email address",
+                    email: "Please enter a valid email address"
+                },
+                Contactno: {
+                    required: "Please enter contact number",
+                    number: "Must be in number format",
+                    minlength: "Contact number must be at least 11 digits"
+                },
+                Designation_Id: {
+                    required: "Please select a designation"
+                },
+                Department_Id: {
+                    required: "Please select a department"
+                },
+                CreditToTake: {
+                    required: "Please enter the credit to be taken",
+                    min: "Please enter a non-negative value"
+                }
+            }
+        });
+    </script>
+
+}

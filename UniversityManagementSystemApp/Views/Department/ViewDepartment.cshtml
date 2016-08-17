@@ -1,0 +1,37 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Department> aDepartments = ViewBag.aDepartmensList;
+    
+}
+<div class="container">
+    <div>
+        <fieldset>
+            <legend>View Department</legend>
+            <div align="center">
+                <table class="table table-responsive table-hover" >
+                    <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (Department aDepartment in aDepartments)
+                    {
+                        <tr>
+                            <td>@aDepartment.Code</td>
+                            <td>@aDepartment.Name</td>
+                        </tr>
+                    }
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+
+    </div>
+
+</div>
+

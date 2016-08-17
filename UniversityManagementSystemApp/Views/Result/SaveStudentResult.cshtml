@@ -1,0 +1,161 @@
+﻿@using UniversityManagementSystemApp.DAL.Model
+@model UniversityManagementSystemApp.DAL.Model.Result
+
+@{
+    ViewBag.Title = "SaveStudentResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Student> aStudents = ViewBag.StudentList;
+    List<Grade> aGrades = ViewBag.GradeList;
+}
+
+<link href="/Content/style.css" rel="stylesheet" />
+<style>
+    label.error {
+        color: red;
+    }
+</style>
+
+<h2>SaveStudentResult</h2>
+
+<div >
+    <form id="saveResult" method="POST">
+        <div class="form-group" align="center">
+            <table>
+                <tr>
+                    <td><label for="StudentId">Student Reg. No</label></td>
+                    <td>
+                        <select id="StudentId" name="StudentId">
+                            <option value="">Pls select a Student</option>
+                            @foreach (Student aStudent in aStudents)
+                            {
+                                <option value="@aStudent.Id">@aStudent.Registration_Number</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="Name">Name</label></td>
+                    <td><input id="Name" name="Name" type="text" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                    <td><label for="Email">Email</label></td>
+                    <td><input id="Email" name="Email" type="text" readonly="readonly"/></td>
+                </tr>
+                <tr>
+                    <td><label for="Department">Department</label></td>
+                    <td>
+                        <input id="Department" name="Department" type="text" readonly="readonly"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="CourseId">Select Course</label></td>
+                    <td>
+                        <select id="CourseId" name="CourseId"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="GradeId">Select Grade Letter</label></td>
+                    <td>
+                        <select id="GradeId" name="GradeId">
+                            <option value="">Pls Select Course Grade</option>
+                            @foreach (Grade aGrade in aGrades)
+                            {
+                                <option value="@aGrade.Id">@aGrade.Garde</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="Save" class="btn btn-danger" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+
+<div>
+    @if (ViewBag.message != null)
+    {
+        <p style="color: green">@ViewBag.message</p>
+    }
+</div>
+@section scripts
+{
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/wickedpicker/wickedpicker.js"></script>
+    <script>
+        $("#saveResult").validate({
+            rules: {
+                StudentId: {
+                    required: true
+                },
+                Name: { required: true },
+                Email: { required: true },
+                Department: { required: true },
+                CourseId: { required: true },
+                GradeId: { required: true }
+            },
+            messages: {
+                StudentId: {
+                    required: "Please select a Students Regestration Number"
+                },
+                Name: "",
+                Email: "",
+                Department: "",
+                CourseId: "Please select a Course",
+                GradeId: "Please select a Grade Letter"
+            }
+        });
+
+
+        $(document).ready(function () {
+            $("#StudentId").change(function () {
+                $("#Name").val('');
+                $("#Email").val('');
+                $("#Department").val('');
+                $("#CourseId").empty();
+                var stdntId = $("#StudentId").val();
+                var json = { studentId: stdntId };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetStudentByID", "Result")',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+
+                        $.each(data, function (key, value) {
+                            $("#Name").val(value.Name);
+                            $("#Email").val(value.Email);
+                            $("#Department").val(value.Code);
+
+                            var stdId = value.Id;
+                            var jason = { studentIdforCourse: stdId };
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("GetEnrollCourseByStdId", "Result")',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(jason),
+                                success: function (data) {
+                                    //alert(data);
+                                    $("#CourseId").append('<option value=' + "" + '>Pls select a Course</option>');
+
+                                    $.each(data, function (key, value) {
+                                        $("#CourseId").append('<option value=' + value.CourseId + '>' + value.CourseName + '</option>');
+
+                                    });
+                                }
+                            });
+
+
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+}
