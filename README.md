@@ -1,2 +1,2 @@
 # UMS
-This is a Project about University management System
+This is a Project about University Management System
